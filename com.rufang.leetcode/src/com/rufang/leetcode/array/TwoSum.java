@@ -2,6 +2,7 @@ package com.rufang.leetcode.array;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -19,11 +20,30 @@ import java.util.Set;
 public class TwoSum {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+		
 		int[] test1 = {2, 7, 11, 15};
-		int[] result = getTwoSum(test1, 9);
+		int[] result = getTwoSum2(test1, 9);
 		System.out.println(result[0] + " " + result[1]);
 
+		int[] test2 = {3, 2, 4};
+		int[] result2 = getTwoSum2(test2, 6);
+		System.out.println(result2[0] + " " + result2[1]);
+		
+		//same entry
+		int[] test3 = {3, 3};
+		int[] result3 = getTwoSum2(test3, 6);
+		System.out.println(result3[0] + " " + result3[1]);
+		
+		//0
+		int[] test4 = {0,4,3,0};
+		int[] result4 = getTwoSum2(test4, 0);
+		System.out.println(result4[0] + " " + result4[1]);
+		
+		//negative value
+		int[] test5 = {-1,-2,-3,-4,-5};
+		int[] result5 = getTwoSum2(test5, -8);
+		System.out.println(result5[0] + " " + result5[1]);
+		
 	}
 	
 	public static int[] getTwoSum(int[] nums, int target){
@@ -33,26 +53,61 @@ public class TwoSum {
 			 return new int[]{firstIndex, secondIndex} ;
 		}
 		
-		Map<Integer, Integer> numMap = new HashMap<Integer, Integer>();
+		Map<Integer, HashSet<Integer>> numMap = new HashMap<Integer, HashSet<Integer>>();
 		
 		for(int i=0; i<nums.length; i++){
-			numMap.put(new Integer(nums[i]), new Integer(i));
+			if(numMap.containsKey(new Integer(nums[i]))){
+				numMap.get(new Integer(nums[i])).add(new Integer(i));
+			} else {
+				HashSet<Integer> value = new HashSet<Integer>();
+				value.add(new Integer(i));
+				numMap.put(new Integer(nums[i]), value);
+			}
+			
 		}
 		
 		for(int i=0; i<nums.length; i++){
 			int num = nums[i];
 			int second = target - num;
-			if(second <= 0){
-				continue;
-			}
+			
 			if(numMap.containsKey(new Integer(second))){
-				firstIndex = i;
-				secondIndex = numMap.get(new Integer(second)).intValue();
-				break;
+				
+				HashSet<Integer> value = numMap.get(new Integer(second));
+				
+				if(value != null){
+					Iterator<Integer> items = value.iterator();
+					while(items.hasNext()){
+						int v = items.next().intValue();
+						if(v != i){
+							firstIndex = i;
+							secondIndex = v;
+							return new int[]{firstIndex, secondIndex} ;
+						}
+					}
+					
+				}
+				
 			}
 		}
 		
 		return new int[]{firstIndex, secondIndex} ;
+	}
+	
+	
+	public static int[] getTwoSum2(int[] nums, int target){
+		if (nums == null || nums.length < 2)
+			return new int[] { 0, 0 };
+
+		HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
+		for (int i = 0; i < nums.length; i++) {
+			if (map.containsKey(nums[i])) {
+				return new int[] { map.get(nums[i]), i };
+			} else {
+				map.put(target - nums[i], i);
+			}
+		}
+
+		return new int[] { 0, 0 };
 	}
 
 }
